@@ -1,6 +1,6 @@
 # Strette
 
-Strette is an emacs library that ease the monitoring of log files during development.
+Strette is an emacs library for monitoring log files during development.
 Strette can be used to watch and process log files by parsing, filtering, transforming and finally writing their content in an emacs buffer.
 
 Strette configuration (log parsing/filtering/transformation) is done through elisp. While this requires learning a bit of elisp, this make Strette configuration arbitrary flexible, easily reproducible and does not require learning yet another keymap / Domain Specific Language.
