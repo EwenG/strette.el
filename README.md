@@ -1,10 +1,12 @@
 # Strette
 
 Strette is an emacs library for monitoring log files during development.
-Strette can be used to watch and process log files by parsing, filtering, transforming and finally writing their content in an emacs buffer.
+Strette can be used to watch log files in order to parse, filter and/or transform their content.
 
 Strette configuration (log parsing/filtering/transformation) is done through elisp. While this requires learning a bit of elisp, this make Strette configuration arbitrary flexible, easily reproducible and does not require learning yet another keymap / Domain Specific Language.
+
 Strette is designed to be dynamic - Strette configuration can be live reloaded during development.
+
 Strette is designed to be fast - The number of logs to display can be customized in order to be able to process arbitrary large files without the need for external mode such as VLF or the need to disable features such as font-lock.
 
 ## Installation
@@ -21,7 +23,7 @@ Add Strette to your emacs package archives:
 
 ### `strette-start`
 
-Arglists: `([target-directory] [target-directory {:keys [allow-outside-target?]}])`
+Arglists: `(f-name buffer-name log-regexp log-keys log-formatter log-filter &optional logs-limit)`
 
 Watch the log file F-NAME and display its content in a buffer named BUFFER-NAME.
 
