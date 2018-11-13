@@ -1,0 +1,58 @@
+# Strette
+
+Strette is an emacs library that ease the monitoring of log files during development.
+Strette can be used to watch and process log files by parsing, filtering, transforming and finally writing their content in an emacs buffer.
+
+Strette configuration (log parsing/filtering/transformation) is done through elisp. While this requires learning a bit of elisp, this make Strette configuration arbitrary flexible, easily reproducible and does not require learning yet another keymap / Domain Specific Language.
+Strette is designed to be dynamic - Strette configuration can be live reloaded during development.
+Strette is designed to be fast - The number of logs to display can be customized in order to be able to process arbitrary large files without the need for external mode such as VLF or the need to disable features such as font-lock.
+
+## Installation
+
+Strette requires emacs 25+. Strette uses the wc (word count) and tail commands and thus requires them to be installed and available.
+
+Add Strette to your emacs package archives:
+
+```elisp
+(add-to-list 'package-archives '("replique" . "https://raw.githubusercontent.com/EwenG/strette.el/master/packages/") t)
+```
+
+## API
+
+### `strette-start`
+
+Arglists: `([target-directory] [target-directory {:keys [allow-outside-target?]}])`
+
+Watch the log file F-NAME and display its content in a buffer named BUFFER-NAME.
+
+If BUFFER-NAME already exists and is already a strette buffer, then it is cleared and reused. If BUFFER-NAME already exists and is not a strette buffer, an error is thrown. If BUFFER-NAME does not exist, it is created.
+
+Each line of the F-NAME file is matched against the LOG-REGEXP regexp and reified into an association list with the following format:
+```elisp
+`((key1 . match-group1)
+  (key2 . match-group2)
+  ...
+  (keyN . match-groupN)
+  (:message . message-text))
+```
+where the keys are the elements of the LOG-KEYS list and the match-groups are the groups defined in the LOG-REGEXP. The reified log always contains a :message entry which value is the text that didn't match the regexp, including the lines found between two regexp match.
+
+LOG-FORMATTER is a function which only argument is a log and must return a string which is the serialized representation of the log.
+
+LOG-FILTER is a function which only argument is a log. LOG-FILTER must return a log which will be output into the BUFFER-NAME buffer. LOG-FILTER can return nil to exclude a log from the output buffer. LOG-FILTER is allowed to modify the values associated with the log keys.
+
+LOGS-LIMIT is an optional parameter representing the maximum number of logs written to the output buffer. Its default value is 100. Passing nil as a LOGS-LIMIT will limit the number of logs to 100. The LOGS-LIMIT can be disabled by passing the value :no-limit.
+
+Additional consideration:
+- Every log entry in the F-NAME log file is expected to start after a newline character.
+- The LOG-FILTER can be called multiple times with a same log parameter and as such, must be free of side effects. The LOG-FILTER function can be called with a log parameter which :message value is truncated but the LOG-FILTER is guaranteed to be called at least once with its full :message value. Strette will take care of writing a same log only once in the output buffer.
+ 
+## Usage
+
+See the [sample files](https://github.com/EwenG/strette.el/blob/master/sample/) for an example of usage.
+
+# License
+
+Copyright 2018 Ewen Grosjean.
+
+Distributed under the GNU General Public License, version 3.
