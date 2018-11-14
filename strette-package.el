@@ -32,13 +32,14 @@
 (defun make-package (version)
   (let ((default-directory "~/"))
     (shell-command (format "cp -R strette.el strette-%s" version))
-    (shell-command (format "COPYFILE_DISABLE=1 tar -cvf strette-%s.tar --exclude=\"strette-%s/.*\" --exclude=\"strette-%s/packages\" strette-%s/" version version version version))
+    (shell-command (format "COPYFILE_DISABLE=1 tar -cvf strette-%s.tar --exclude=\"strette-%s/.*\" --exclude=\"strette-%s/packages\" --exclude=\"strette-%s/*.iml\" --exclude=\"strette-%s/sample\" --exclude=\"strette-%s/test.log\" strette-%s/"
+                           version version version version version version version))
     (shell-command (format "rm -r ~/strette-%s" version))
     (package-upload-file (format "~/strette-%s.tar" version))
     (shell-command (format "rm ~/strette-%s.tar" version))))
 
 (comment
- (make-package "0.0.2")
+ (make-package "0.0.1")
  )
 
 ;; package-upload-file
