@@ -17,6 +17,10 @@ Add Strette to your emacs package archives:
 
 ```elisp
 (add-to-list 'package-archives '("strette" . "https://raw.githubusercontent.com/EwenG/strette.el/master/packages/") t)
+
+(unless (package-installed-p 'strette)
+    (package-refresh-contents)
+    (package-install 'strette))
 ```
 
 ## API
