@@ -16,7 +16,7 @@ Strette requires emacs 25+. Strette uses the wc (word count) and tail commands a
 Add Strette to your emacs package archives:
 
 ```elisp
-(add-to-list 'package-archives '("replique" . "https://raw.githubusercontent.com/EwenG/strette.el/master/packages/") t)
+(add-to-list 'package-archives '("strette" . "https://raw.githubusercontent.com/EwenG/strette.el/master/packages/") t)
 ```
 
 ## API
