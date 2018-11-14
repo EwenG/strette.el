@@ -48,6 +48,14 @@ LOGS-LIMIT is an optional parameter representing the maximum number of logs writ
 Additional consideration:
 - Every log entry in the F-NAME log file is expected to start after a newline character.
 - The LOG-FILTER can be called multiple times with a same log parameter and as such, must be free of side effects. The LOG-FILTER function can be called with a log parameter which :message value is truncated but the LOG-FILTER is guaranteed to be called at least once with its full :message value. Strette will take care of writing a same log only once in the output buffer.
+
+### `strette-alist-get`
+
+Return the value associated with KEY in ALIST. If KEY is not found in ALIST, return DEFAULT. keys are compared using `equal`.
+
+### `strette-alist-set`
+
+Non destructively associate the value V with the key K in the alist ALIST. If ALIST already contains K, then its value (the first one if there are multiple K) is changed to V. If ALIST does not contain a key K, then the pair (K . V) is cons-ed to ALIST. Keys are compared using `equal`.
  
 ## Usage
 
