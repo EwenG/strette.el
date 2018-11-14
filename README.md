@@ -55,9 +55,13 @@ Additional considerations:
 
 ### `strette-alist-get`
 
+Arglists: `(alist k &optional default)`
+
 Return the value associated with KEY in ALIST. If KEY is not found in ALIST, return DEFAULT. keys are compared using `equal`.
 
 ### `strette-alist-set`
+
+Arglists: `(alist k v)`
 
 Non destructively associate the value V with the key K in the alist ALIST. If ALIST already contains K, then its value (the first one if there are multiple K) is changed to V. If ALIST does not contain a key K, then the pair (K . V) is cons-ed to ALIST. Keys are compared using `equal`.
  
