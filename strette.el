@@ -24,7 +24,7 @@
 
 ;; Code:
 
-(defconst strette-version "0.0.1")
+(defconst strette-version "0.0.2")
 
 (defmacro comment (&rest body)
   "Comment out one or more s-expressions."
