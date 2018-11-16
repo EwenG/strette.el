@@ -44,6 +44,7 @@
 
 (defvar strette--proc nil)
 (defvar strette--proc-stderr nil)
+(defvar strette--last-parsed-log nil)
 
 (defun strette--make-logs (logs-size)
   (if (null logs-size)
@@ -139,6 +140,7 @@
           (let ((message (buffer-substring-no-properties
                           (cadr match-list) match-search-start-point)))
             (when-let (log (strette--make-log log-keys match-list message))
+              (setq-local strette--last-parsed-log log)
               (when-let (filtered-log (funcall log-filter log))
                 (strette--init-insert-log logs log)))
             (skip-chars-backward "\n")
@@ -228,14 +230,18 @@
            ,@body)))))
 
 (defun strette--append-message (buffer logs log-formatter log-filter message-tail)
-  (when-let (log (strette--logs-first logs))
-    (let* ((log-message (alist-get :message log))
-           (updated-log (strette-alist-set log :message (concat log-message message-tail)))
+  (when strette--last-parsed-log
+    (let* ((last-displayed-log (strette--logs-first logs))
+           (log-message (alist-get :message strette--last-parsed-log))
+           (updated-log (strette-alist-set strette--last-parsed-log
+                                           :message (concat log-message message-tail)))
            (filtered-log (funcall log-filter updated-log)))
+      (setq-local strette--last-parsed-log updated-log)
       (with-current-buffer buffer
         (strette--save-excursion-or-move-forward
          (let* ((inhibit-read-only t))
-           (strette--remove-log-text-backward buffer log)
+           (when (eq strette--last-parsed-log last-displayed-log)
+             (strette--remove-log-text-backward buffer last-displayed-log))
            (when filtered-log
              (strette--logs-replace-first logs updated-log)
              (goto-char (point-max))
@@ -276,6 +282,7 @@
                                                                            :message message)))
                          (filtered-log (when log (funcall log-filter log))))
                     (delete-region log-start (car match-list))
+                    (when log (setq-local strette--last-parsed-log log))
                     (when filtered-log
                       (strette--remove-log-text buffer (strette--log-to-remove logs))
                       (strette--insert-log logs log)
@@ -297,6 +304,7 @@
                      (log (strette--make-log log-keys match-list message))
                      (filtered-log (when log (funcall log-filter log))))
                 (delete-region log-start (point))
+                (when log (setq-local strette--last-parsed-log log))
                 (when filtered-log
                   (strette--remove-log-text buffer (strette--log-to-remove logs))
                   (strette--insert-log logs log)
@@ -313,7 +321,7 @@
           (skip-chars-backward "\n")
           (when (not (equal (point-min) (point-max)))
             (strette--append-message buffer logs log-formatter log-filter
-                                    (buffer-substring-no-properties (point-min) (point)))
+                                     (buffer-substring-no-properties (point-min) (point)))
             (delete-region (point-min) (point))))))))
 
 (defun strette--proc-filter (buffer logs log-regexp log-keys
@@ -418,7 +426,7 @@ Additional considerations:
               (restore-buffer-modified-p nil))
             ;; Update the logs with the line skipped in the init function
             (strette--parse-new-logs working-buffer buffer logs log-regexp log-keys
-                                    log-formatter log-filter "")
+                                     log-formatter log-filter "")
             (with-current-buffer buffer
               (let* ((proc-stderr (make-pipe-process :name proc-name-stderr
                                                      :buffer nil
