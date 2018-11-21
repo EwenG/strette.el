@@ -39,7 +39,7 @@
     (shell-command (format "rm ~/strette-%s.tar" version))))
 
 (comment
- (make-package "0.0.3")
+ (make-package "0.0.4")
  )
 
 ;; package-upload-file
