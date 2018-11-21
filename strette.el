@@ -231,16 +231,18 @@
 
 (defun strette--append-message (buffer logs log-formatter log-filter message-tail)
   (when strette--last-parsed-log
-    (let* ((last-displayed-log (strette--logs-first logs))
-           (log-message (alist-get :message strette--last-parsed-log))
-           (updated-log (strette-alist-set strette--last-parsed-log
+    (let* (;; capture last-parsed-log in lexical scope
+           (last-parsed-log strette--last-parsed-log)
+           (last-displayed-log (strette--logs-first logs))
+           (log-message (alist-get :message last-parsed-log))
+           (updated-log (strette-alist-set last-parsed-log
                                            :message (concat log-message message-tail)))
            (filtered-log (funcall log-filter updated-log)))
       (setq-local strette--last-parsed-log updated-log)
       (with-current-buffer buffer
         (strette--save-excursion-or-move-forward
          (let* ((inhibit-read-only t))
-           (when (eq strette--last-parsed-log last-displayed-log)
+           (when (eq last-parsed-log last-displayed-log)
              (strette--remove-log-text-backward buffer last-displayed-log))
            (when filtered-log
              (strette--logs-replace-first logs updated-log)
