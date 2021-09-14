@@ -374,7 +374,8 @@
           (restore-buffer-modified-p nil))))))
 
 (defun strette-start (f-name-or-buffer log-regexp log-keys log-formatter &optional logs-limit)
-  "If F-NAME-OR-BUFFER is the path to a log file, then watch the log file F-NAME-OR-BUFFER and display its content in a buffer which name is generated from F-NAME-OR-BUFFER.
+  "If F-NAME-OR-BUFFER is the path to a log file, then watch the log file F-NAME-OR-BUFFER and display its content in a buffer.
+The buffer name is generated from F-NAME-OR-BUFFER.
 
 If F-NAME-OR-BUFFER is a strette buffer (typically a buffer returned by the strette API), then it is cleared and reused. If F-NAME-OR-BUFFER is a buffer but is not a strette buffer, then an error is thrown.
 
