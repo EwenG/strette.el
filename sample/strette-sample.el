@@ -17,22 +17,25 @@
         ((equal level "DEBUG") "white")
         (t nil)))
 
-;; Format a single log entry. Note the use of font locks.
-(defun sample-log-formatter (log)
-  (format "%s [%s] %s %s - %s"
-          (propertize (alist-get :time log) 'font-lock-face '(:foreground "dark blue" :weight semi-bold))
-          (propertize (alist-get :thread log) 'font-lock-face '(:foreground "dark green" :weight semi-bold))
-          (propertize (alist-get :level log) 'font-lock-face `(:underline t :background ,(sample-log-level-background (alist-get :level log))))
-          (propertize (alist-get :logger log) 'font-lock-face '(:foreground "saddle brown" :weight semi-bold))
-          (alist-get :message log)))
-
-;; This function can filter out logs entries by returning nil. This function is also allowed to
-;; transorm the logs.
 (defun sample-log-filter (log)
   ;; Filter out logs which do not have an ERROR level
   (when (equal (alist-get :level log) "ERROR")
     ;; Modify the message of ERROR logs
-    (strette-alist-set log :message "Modified message")))
+    (comment (strette-alist-set log :message "Modified message"))
+    log))
+
+;; Format a single log entry. Note the use of font locks.
+;; This function can filter out logs entries by returning nil. This function is also allowed to
+;; transorm the logs.
+(defun sample-log-formatter (log)
+  (let* ((log (sample-log-filter log)))
+    (when log
+      (format "%s [%s] %s %s - %s"
+              (propertize (alist-get :time log) 'font-lock-face '(:foreground "dark blue" :weight semi-bold))
+              (propertize (alist-get :thread log) 'font-lock-face '(:foreground "dark green" :weight semi-bold))
+              (propertize (alist-get :level log) 'font-lock-face `(:underline t :background ,(sample-log-level-background (alist-get :level log))))
+              (propertize (alist-get :logger log) 'font-lock-face '(:foreground "saddle brown" :weight semi-bold))
+              (alist-get :message log)))))
 
 (comment
  
@@ -40,18 +43,18 @@
  ;; parsing / filtering / formatting functions have been redefined
  
  (strette-start (expand-file-name "sample.log")
-                "*sample.log*" sample-log-regexp sample-log-keys
-                'sample-log-formatter 'sample-log-filter)
+                sample-log-regexp sample-log-keys
+                'sample-log-formatter)
 
  (strette-start (expand-file-name "sample.log")
-                "*sample.log*" sample-log-regexp sample-log-keys
-                'sample-log-formatter 'sample-log-filter
+                sample-log-regexp sample-log-keys
+                'sample-log-formatter
                 ;; Display at most 10 log entries (the default is 100)
                 10)
 
  (strette-start (expand-file-name "sample.log")
-                "*sample.log*" sample-log-regexp sample-log-keys
-                'sample-log-formatter 'sample-log-filter
+                sample-log-regexp sample-log-keys
+                'sample-log-formatter
                 ;; Don't limit the number of displayed log entries
                 :no-limit)
  )
